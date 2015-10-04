@@ -80,7 +80,6 @@ function setTarget() {
 function setWall(count) {
 
     var cell, i, num;
-    var colls = numcoll * numrows;
     for (i = 0; i < count; i++) {
         num = checkItem();
         cell = matrix.children[num];
@@ -140,8 +139,7 @@ window.onload = function () {
             else {
                 clearInterval(intervId);
             }
-        }
-        ;
+        };
 
         window.onkeydown = function (e) {
             keycode = e.keycode || e.which;
