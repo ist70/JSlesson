@@ -35,8 +35,13 @@ function clearCell() {
 // false, если не закрашена.
 
 function getCell(row, col) {
-
-    return matrix.children [row * numrows + col].style.backgroundColor == targetcolor;
+    if (matrix.children [row * numrows + col].style.backgroundColor == targetcolor) {
+        return 1
+    }
+    if (matrix.children [row * numrows + col].style.backgroundImage) {
+        return 2
+    }
+    return false;
 }
 
 // функция принимает координаты ячейки
@@ -93,14 +98,16 @@ function setWall(count) {
 // иначе false
 //
 function controlCell(vrow, vcol) {
-    if (getCell(vrow, vcol)) {
+    if (1 == getCell(vrow, vcol)) {
         alert('Game over');
-        return true;
+        return 1;
     }
-    else {
+    if (2 == getCell(vrow, vcol)) {
+        booom(vrow, vcol);
+        return 1;
+    }
         setCell(vrow, vcol, true);
         return false;
-    }
 }
 
 //
@@ -126,6 +133,14 @@ function driver(keycode, keycodes) {
 }
 
 //
+// Функция Бум! Стена)))
+//
+function booom(row, col){
+    matrix.children [row * numrows + col].style.backgroundImage = boomstyle;
+    alert('Game dismission');
+}
+
+//
 // Точка входа. Все параметры находятся в файле config.js
 //
 window.onload = function () {
@@ -142,7 +157,7 @@ window.onload = function () {
     var intervId = setInterval(function () {
         setCell(vrow, vcol, false);
         driver(keycode, keycodes);
-        if (controlCell(vrow, vcol)) {
+        if (1 == controlCell(vrow, vcol)) {
             if (window.confirm('Начать заново?')) {
                 keycode = 39;   // Начальное движение квадрата (вправо)
                 newStart();
@@ -150,13 +165,14 @@ window.onload = function () {
             else {
                 clearInterval(intervId);
             }
-        };
+        }
+        ;
 
         window.onkeydown = function (e) {
             keycode = e.keycode || e.which;
             setCell(vrow, vcol, false);
             driver(keycode, keycodes);
-            if (controlCell(vrow, vcol)) {
+            if (1 == controlCell(vrow, vcol)) {
                 if (window.confirm('Начать заново?')) {
                     keycode = 39;   // Начальное движение квадрата (вправо)
                     newStart();
