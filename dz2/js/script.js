@@ -1,3 +1,4 @@
+"use strict"
 //
 // Установка  игрового поля, Создание матрицы
 //
@@ -7,7 +8,7 @@ function Matrix(containerId, rows, cols, widthitem) {
     this.containerId.style.height = cols * widthitem + 'px';
 
     this.create = function () {
-        colls = rows * cols;
+        var colls = rows * cols;
         for (var i = 0; i < colls; i++) {
             var div = document.createElement('div');
             div.className = 'cell';
@@ -15,7 +16,6 @@ function Matrix(containerId, rows, cols, widthitem) {
             div.style.height = widthitem - 1 + 'px';
             this.containerId.appendChild(div);
         }
-
     }
 }
 
@@ -87,6 +87,11 @@ function setWall(count) {
     }
 }
 
+//
+// Контроль нахождения движущейся ячейки
+// если она попала на targetcolor, то вернёт true
+// иначе false
+//
 function controlCell(vrow, vcol) {
     if (getCell(vrow, vcol)) {
         alert('Game over');
@@ -98,6 +103,9 @@ function controlCell(vrow, vcol) {
     }
 }
 
+//
+// функция начала новой игры
+//
 function newStart() {
     clearCell();
     setCell(vrow, vcol, false);
@@ -107,6 +115,9 @@ function newStart() {
     vcol = 1;
 }
 
+//
+// Функция движения квадрата
+//
 function driver(keycode, keycodes) {
     if ((keycode == keycodes.LEFT) && (0 != vcol)) vcol--;
     else if ((keycode == keycodes.RIGHT) && (vcol != numrows - 1)) vcol++;
@@ -128,7 +139,7 @@ window.onload = function () {
     var keycodes = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
     var keycode = 39;   // Начальное движение квадрата (вправо)
 
-    intervId = setInterval(function () {
+    var intervId = setInterval(function () {
         setCell(vrow, vcol, false);
         driver(keycode, keycodes);
         if (controlCell(vrow, vcol)) {
