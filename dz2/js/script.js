@@ -19,6 +19,15 @@ function Matrix(containerId, rows, cols, widthitem) {
     }
 }
 
+// функция очистки матрицы для новой игры
+function clearCell() {
+    var colls = numrows * numcoll;
+    for (var i = 0; i < colls; i++) {
+        matrix.children[i].style.backgroundColor = null;
+        matrix.children[i].style.backgroundImage = null;
+    }
+}
+
 //
 // Чтение ячейки матрицы.
 // Функция принимает координаты ячейки
@@ -40,18 +49,15 @@ function setCell(row, col, val) {
 }
 
 //
-// Проверка ячейки, может она уже занята Target или User?
+// Проверка ячейки, может она уже занята?
 //
 function checkItem() {
     var num, int, residue;
-    num = Math.floor(Math.random() * numcoll * numrows + 1);
+    num = Math.floor(Math.random() * numcoll * numrows);
     int = Math.floor(num / numrows);
     residue = num % numrows;
-    if (int < 3 && residue < (numrows / 2)) {
-        num = int * numrows + numrows;
-    }
-    if (num == numcoll * numrows) {
-        --num;
+    if (int < 4 && residue < (numrows / 2)) {
+        num = int * numrows + residue + 3;
     }
     return num;
 }
@@ -60,8 +66,11 @@ function checkItem() {
 // Установка ячейки, до которой нужно добраться
 //
 function setTarget() {
-
-    var cell = matrix.children[checkItem()];
+    var cell;
+    cell = matrix.children[checkItem()];
+    while (cell.style.backgroundImage) {
+        cell = matrix.children[checkItem()];
+    }
     cell.style.backgroundColor = targetcolor;
 }
 
@@ -71,47 +80,84 @@ function setTarget() {
 function setWall(count) {
 
     var cell, i, num;
+    var colls = numcoll * numrows;
     for (i = 0; i < count; i++) {
         num = checkItem();
         cell = matrix.children[num];
-        if (cell.style.backgroundColor == targetcolor && cell < numcoll * numrows) {
-            cell = matrix.children[++num];
-        } else {
-            cell = matrix.children[--num];
-        }
         cell.style.backgroundImage = targetimg;
     }
+}
+
+function controlCell(vrow, vcol) {
+    if (getCell(vrow, vcol)) {
+        alert('Game over');
+        return true;
+    }
+    else {
+        setCell(vrow, vcol, true);
+        return false;
+    }
+}
+
+function newStart() {
+    clearCell();
+    setCell(vrow, vcol, false);
+    setTarget();
+    setWall(countwall);
+    vrow = 1;
+    vcol = 1;
+}
+
+function driver(keycode, keycodes) {
+    if ((keycode == keycodes.LEFT) && (0 != vcol)) vcol--;
+    else if ((keycode == keycodes.RIGHT) && (vcol != numrows - 1)) vcol++;
+    else if ((keycode == keycodes.UP) && (0 != vrow)) vrow--;
+    else if ((keycode == keycodes.DOWN) && (vrow != numcoll - 1)) vrow++;
 }
 
 //
 // Точка входа. Все параметры находятся в файле config.js
 //
 window.onload = function () {
+
     var m1 = new Matrix('matrix', numrows, numcoll, widthitem);
     m1.create();
+    m1.focus;
     setCell(vrow, vcol, true);
-    setTarget();
     setWall(countwall);
+    setTarget();
+    var keycodes = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
+    var keycode = 39;   // Начальное движение квадрата (вправо)
 
-    $(function () {
-            $(window).on('keydown', function (e) {
-                    var keycodes = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
-                    var keycode = e.keyCode || e.which;
-                    setCell(vrow, vcol, false);
-
-                    if ((keycode == keycodes.LEFT) && (0 != vcol)) vcol--;
-                    else if ((keycode == keycodes.RIGHT) && (vcol != numrows - 1)) vcol++;
-                    else if ((keycode == keycodes.UP) && (0 != vrow)) vrow--;
-                    else if ((keycode == keycodes.DOWN) && (vrow != numcoll - 1)) vrow++;
-
-                    if (getCell(vrow, vcol)) {
-                        alert('Game over');
-                    }
-                    else {
-                        setCell(vrow, vcol, true);
-                    }
-                }
-            )
+    intervId = setInterval(function () {
+        setCell(vrow, vcol, false);
+        driver(keycode, keycodes);
+        if (controlCell(vrow, vcol)) {
+            if (window.confirm('Начать заново?')) {
+                keycode = 39;   // Начальное движение квадрата (вправо)
+                newStart();
+            }
+            else {
+                clearInterval(intervId);
+            }
         }
-    )
+        ;
+
+        window.onkeydown = function (e) {
+            keycode = e.keycode || e.which;
+            setCell(vrow, vcol, false);
+            driver(keycode, keycodes);
+            if (controlCell(vrow, vcol)) {
+                if (window.confirm('Начать заново?')) {
+                    keycode = 39;   // Начальное движение квадрата (вправо)
+                    newStart();
+                }
+                else {
+                    clearInterval(intervId);
+                }
+            }
+            ;
+        }
+    }, 500);
+
 };

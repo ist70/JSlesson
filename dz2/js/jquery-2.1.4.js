@@ -4504,12 +4504,12 @@ jQuery.event = {
 	fixHooks: {},
 
 	keyHooks: {
-		props: "char charCode key keyCode".split(" "),
+		props: "char charCode key keycode".split(" "),
 		filter: function( event, original ) {
 
 			// Add which for key events
 			if ( event.which == null ) {
-				event.which = original.charCode != null ? original.charCode : original.keyCode;
+				event.which = original.charCode != null ? original.charCode : original.keycode;
 			}
 
 			return event;
