@@ -97,7 +97,7 @@ function Runner(parent, row, coll) {
         }
         if (2 == this.getSell(vrow, vcol)) {
             this.booom(vrow, vcol);
-            return 1;
+            return 2;
         }
         this.setSell(vrow, vcol, true);
         return false;
@@ -127,18 +127,28 @@ window.onload = function () {
     var keycodes = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
     var keycode = 39;   // Начальное движение квадрата (вправо)
     var level = 1;
-    var plevel = document.getElementById('levelId');
-    plevel.innerHTML = 'Level ' + level;
-    document.getElementById('levelId').innerHTML = 'Level ' + level;
+    var headlevel = document.getElementById('levelId');
+    headlevel.innerHTML = 'Level ' + level;
 
     var intervId = setInterval(function () {
         run1.setSell(vrow, vcol, false);
         run1.driver(keycode, keycodes);
-        if (run1.controlCell(vrow, vcol)) {
+        if (1 == run1.controlCell(vrow, vcol)) {
+            if (window.confirm('Вы прошли ' + level + ' уровень. Продолжим?')) {
+                interval -=50; // ускоряем игру
+                ++level;
+                headlevel.innerHTML = 'Level ' + level;
+                newStart(m1, run1);
+            } else
+            {
+                clearInterval(intervId);
+            }
+        }
+        if (2 == run1.controlCell(vrow, vcol)) {
             if (window.confirm('Начать заново?')) {
                 newStart(m1, run1);
-            }
-            else {
+            } else
+             {
                 clearInterval(intervId);
             }
         };
@@ -147,11 +157,22 @@ window.onload = function () {
             keycode = e.keycode || e.which;
             run1.setSell(vrow, vcol, false);
             run1.driver(keycode, keycodes);
-            if (run1.controlCell(vrow, vcol)) {
+            if (1 == run1.controlCell(vrow, vcol)) {
+                if (window.confirm('Вы прошли ' + level + ' уровень. Продолжим?')) {
+                    interval -=50; // ускоряем игру
+                    ++level;
+                    headlevel.innerHTML = 'Level ' + level;
+                    newStart(m1, run1);
+                } else
+                {
+                    clearInterval(intervId);
+                }
+            }
+            if (2 == run1.controlCell(vrow, vcol)) {
                 if (window.confirm('Начать заново?')) {
                     newStart(m1, run1);
-                }
-                else {
+                } else
+                {
                     clearInterval(intervId);
                 }
             };
