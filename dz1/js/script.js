@@ -60,7 +60,7 @@ window.onload = function () {
     $(function () {
             $(window).on('keydown', function (e) {
                     var keycodes = {LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40};
-                    var keycode = e.keyCode || e.which;
+                    var keycode = e.keycode || e.which;
                     setCell(vrow, vcol, false);
 
                     if ((keycode == keycodes.LEFT) && (0 != vcol)) vcol--;
