@@ -15,7 +15,8 @@ function Matrix(containerId, rows, cols, widthitem) {
             div.style.width = widthitem - 1 + 'px';
             div.style.height = widthitem - 1 + 'px';
             this.containerId.appendChild(div);
-        };
+        }
+        ;
     };
 // Проверка ячейки, может она уже занята?
     this.checkItem = function () {
@@ -25,7 +26,8 @@ function Matrix(containerId, rows, cols, widthitem) {
         residue = num % numrows;
         if (int < 4 && residue < (numrows / 2)) {
             num = int * numrows + residue + 3;
-        };
+        }
+        ;
         return num;
     };
 // Установка препятствий
@@ -35,7 +37,8 @@ function Matrix(containerId, rows, cols, widthitem) {
             num = this.checkItem();
             cell = this.containerId.children[num];
             cell.style.backgroundImage = wallimg;
-        };
+        }
+        ;
     };
 // Установка ячейки, до которой нужно добраться
     this.setTarget = function () {
@@ -129,26 +132,34 @@ window.onload = function () {
     var level = 1;
     var headlevel = document.getElementById('levelId');
     headlevel.innerHTML = 'Level ' + level;
+    var intervId;
 
-    var intervId = setInterval(function () {
+    function setGameSpeed(newSpeed) {
+        clearInterval(intervId);
+        if (newSpeed != 0) {
+            intervId = setInterval(gameplay, newSpeed);
+        }
+    };
+
+    var gameplay = function() {
         run1.setSell(vrow, vcol, false);
         run1.driver(keycode, keycodes);
         if (1 == run1.controlCell(vrow, vcol)) {
             if (window.confirm('Вы прошли ' + level + ' уровень. Продолжим?')) {
-                interval -=50; // ускоряем игру
+                interval -= 50; // ускоряем игру
                 ++level;
                 headlevel.innerHTML = 'Level ' + level;
                 newStart(m1, run1);
-            } else
-            {
+                setGameSpeed(interval);
+            } else {
                 clearInterval(intervId);
             }
-        }
+        };
         if (2 == run1.controlCell(vrow, vcol)) {
             if (window.confirm('Начать заново?')) {
                 newStart(m1, run1);
-            } else
-             {
+                interval = 500;
+            } else {
                 clearInterval(intervId);
             }
         };
@@ -159,25 +170,27 @@ window.onload = function () {
             run1.driver(keycode, keycodes);
             if (1 == run1.controlCell(vrow, vcol)) {
                 if (window.confirm('Вы прошли ' + level + ' уровень. Продолжим?')) {
-                    interval -=50; // ускоряем игру
+                    interval -= 50; // ускоряем игру
                     ++level;
                     headlevel.innerHTML = 'Level ' + level;
                     newStart(m1, run1);
-                } else
-                {
+                    setGameSpeed(interval);
+                } else {
                     clearInterval(intervId);
                 }
             }
             if (2 == run1.controlCell(vrow, vcol)) {
                 if (window.confirm('Начать заново?')) {
                     newStart(m1, run1);
-                } else
-                {
+                    interval = 500;
+                } else {
                     clearInterval(intervId);
                 }
-            };
+            }
+            ;
         }
-    }, interval);
+    };
+    setGameSpeed(interval);
 //
 // функция начала новой игры
 //
